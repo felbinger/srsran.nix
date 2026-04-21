@@ -66,6 +66,21 @@ in
       default = { };
       description = "UE settings";
     };
+
+    mbms = mkOption {
+      type = types.submodule (
+        import ./mbms.nix {
+          inherit
+            config
+            pkgs
+            lib
+            ini
+            ;
+        }
+      );
+      default = { };
+      description = "MBMS settings";
+    };
   };
 
   config = mkIf cfg.enable {
