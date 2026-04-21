@@ -28,43 +28,41 @@ in
             freeformType = ini.type;
             options = {
               freq_offset = mkOption {
-                default = "0";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Uplink and Downlink optional frequency offset (in Hz)";
               };
               tx_gain = mkOption {
-                default = "80";
                 type = types.str;
+                default = "80";
                 description = "Transmit gain (dB)";
               };
               rx_gain = mkOption {
-                default = "40";
                 type = types.str;
+                default = "40";
                 description = "Optional receive gain (dB). If disabled, AGC if enabled";
               };
               srate = mkOption {
-                default = "11.52e6";
                 type = types.str;
+                default = "11.52e6";
                 description = "Optional fixed sampling rate (Hz), corresponding to cell bandwidth. Must be set for 5G-SA";
               };
               nof_antennas = mkOption {
-                default = "1";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Number of antennas per carrier (all carriers have the same number of antennas)";
               };
               device_name = mkOption {
-                type = types.enum [
-                  "auto" # default, uses first found
-                  "UHD"
-                  "bladeRF"
-                  "zmq"
-                ];
-                default = "auto";
-                description = "Device driver family.";
+                type =
+                  with types;
+                  nullOr (enum [
+                    "auto" # default, uses first found
+                    "UHD"
+                    "bladeRF"
+                    "zmq"
+                  ]);
+                description = "Device driver family";
               };
               device_args = mkOption {
-                type = types.str;
-                default = "auto";
+                type = with types; nullOr str;
                 # Example for ZMQ-based operation with TCP transport for I/Q samples
                 example = "tx_port=tcp://*:2001,rx_port=tcp://localhost:2000,id=ue,base_srate=23.04e6";
                 description = ''
@@ -91,8 +89,7 @@ in
               #  description = "Arguments for the RF device driver 3.";
               #};
               time_adv_nsamples = mkOption {
-                type = types.str;
-                default = "auto";
+                type = with types; nullOr str;
                 description = ''
                   Transmission time advance (in number of samples) to compensate for RF delay from antenna to timestamp insertion.
 
@@ -100,12 +97,13 @@ in
                 '';
               };
               continuous_tx = mkOption {
-                type = types.enum [
-                  "auto"
-                  "yes"
-                  "no"
-                ];
-                default = "auto";
+                type =
+                  with types;
+                  nullOr (enum [
+                    "auto"
+                    "yes"
+                    "no"
+                  ]);
                 description = "Transmit samples continuously to the radio or on bursts. Default is auto (yes for UHD, no for rest)";
               };
             };
@@ -121,8 +119,8 @@ in
             freeformType = ini.type;
             options = {
               dl_earfcn = mkOption {
-                default = "3350";
                 type = types.str;
+                default = "3350";
                 description = "Downlink EARFCN list";
               };
               dl_freq = mkOption {
@@ -134,8 +132,7 @@ in
                 description = "Override UL frequency corresponding to dl_earfcn";
               };
               nof_carriers = mkOption {
-                type = types.str;
-                default = "1";
+                type = with types; nullOr str;
                 description = "Number of carriers";
               };
             };
@@ -156,8 +153,7 @@ in
                 description = "List of support NR bands seperated by a comma";
               };
               nof_carriers = mkOption {
-                type = types.str;
-                default = "0";
+                type = with types; nullOr str;
                 description = "Number of NR carriers (must be at least 1 for NR support)";
               };
             };
@@ -173,8 +169,16 @@ in
             freeformType = ini.type;
             options = {
               enable = mkOption {
-                type = with types; listOf str;
-                default = [ "none" ];
+                type =
+                  with types;
+                  nullOr (
+                    listOf (enum [
+                      "mac"
+                      "mac_nr"
+                      "nas"
+                      "none"
+                    ])
+                  );
                 apply = builtins.concatStringsSep ","; # convert list to csv
                 example = [
                   "mac"
@@ -183,18 +187,18 @@ in
                 description = "Enable packet captures of layers (mac/mac_nr/nas/none) multiple option list";
               };
               mac_filename = mkOption {
-                type = types.str;
-                default = "/tmp/ue_mac.pcap";
+                type = with types; nullOr str;
+                example = "/tmp/ue_mac.pcap";
                 description = "File path to use for MAC packet capture";
               };
               mac_nr_filename = mkOption {
-                type = types.str;
-                default = "/tmp/ue_mac_nr.pcap";
+                type = with types; nullOr str;
+                example = "/tmp/ue_mac_nr.pcap";
                 description = "File path to use for MAC NR packet capture";
               };
               nas_filename = mkOption {
-                type = types.str;
-                default = "/tmp/ue_nas.pcap";
+                type = with types; nullOr str;
+                example = "/tmp/ue_nas.pcap";
                 description = "File path to use for NAS packet capture";
               };
             };
@@ -226,40 +230,43 @@ in
             options = {
               # TODO generate other options: rf, phy, mac, rlc, pdcp, rrc, nas, gw, usim, stack, all
               all_level = mkOption {
-                type = types.enum [
-                  "debug"
-                  "info"
-                  "warning"
-                  "error"
-                  "none"
-                ];
-                default = "warning";
+                type =
+                  with types;
+                  nullOr (enum [
+                    "debug"
+                    "info"
+                    "warning"
+                    "error"
+                    "none"
+                  ]);
+                example = "warning";
                 description = "Log levels for all layers";
               };
               phy_lib_level = mkOption {
-                type = types.enum [
-                  "debug"
-                  "info"
-                  "warning"
-                  "error"
-                  "none"
-                ];
-                default = "none";
+                type =
+                  with types;
+                  nullOr (enum [
+                    "debug"
+                    "info"
+                    "warning"
+                    "error"
+                    "none"
+                  ]);
+                example = "none";
                 description = "Log level for phy layer";
               };
               all_hex_limit = mkOption {
-                default = "32";
                 type = types.str;
+                default = "32";
                 description = "Limit for packet hex dumps for all layers";
               };
               filename = mkOption {
-                default = "/tmp/ue.log";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "/tmp/ue.log";
                 description = "File path to use for log output. Can be set to stdout to print logs to standard output.";
               };
               file_max_size = mkOption {
-                default = "-1";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Maximum file size (in kilobytes). When passed, multiple files are created. If set to negative, a single log file will be created.";
               };
             };
@@ -285,11 +292,12 @@ in
             freeformType = ini.type;
             options = {
               mode = mkOption {
-                type = types.enum [
-                  "soft"
-                  "pcsc"
-                ];
-                default = "soft";
+                type =
+                  with types;
+                  nullOr (enum [
+                    "soft"
+                    "pcsc"
+                  ]);
                 description = "USIM mode";
               };
               algo = mkOption {
@@ -306,7 +314,7 @@ in
                 default = null;
                 example = "63BFA50EE6523365FF14C1F45F88737D";
                 description = ''
-                  128-bit Operator Variant Algorithm Configuration Field (hex)
+                  128-bit operator code
 
                   Specify either op or opc (only used in milenage)
                 '';
@@ -316,7 +324,7 @@ in
                 default = null;
                 example = "63BFA50EE6523365FF14C1F45F88737D";
                 description = ''
-                  128-bit Operator Variant Algorithm Configuration Field (hex)
+                  128-bit operator code (ciphered variant)
 
                   Specify either op or opc (only used in milenage)
                 '';
@@ -342,8 +350,7 @@ in
                 description = "PIN in case real SIM card is used";
               };
               reader = mkOption {
-                type = types.str;
-                default = "";
+                type = with types; nullOr str;
                 description = "Specify card reader by it's name as listed by 'pcsc_scan'. If empty, try all available readers.";
               };
             };
@@ -359,44 +366,31 @@ in
             freeformType = ini.type;
             options = {
               ue_category = mkOption {
-                type = types.enum [
-                  "1"
-                  "2"
-                  "3"
-                  "4"
-                  "5"
-                ];
-                default = "4";
+                type = with types; nullOr str;
                 description = "Sets UE category";
               };
               release = mkOption {
-                type = types.str;
-                default = "8";
+                type = with types; nullOr str;
                 description = "UE Release (8 to 15)";
               };
               feature_group = mkOption {
-                type = with types; nullOr str; # TODO
-                #default = "0xe6041000";
+                type = with types; nullOr str;
                 description = "Hex value of the featureGroupIndicators field in the UECapabilityInformation message";
               };
               mbms_service_id = mkOption {
-                type = types.str;
-                default = "-1";
+                type = with types; nullOr str;
                 description = "MBMS service id for autostarting MBMS reception. Default -1 means disabled.";
               };
               mbms_service_port = mkOption {
-                type = types.str;
-                default = "4321";
+                type = with types; nullOr str;
                 description = "Port of the MBMS service";
               };
               nr_measurement_pci = mkOption {
-                type = types.str;
-                default = "500";
+                type = with types; nullOr str;
                 description = "NR PCI for the simulated NR measurement";
               };
               nr_short_sn_support = mkOption {
-                type = types.bool;
-                default = true;
+                type = with types; nullOr bool;
                 description = "Announce PDCP short SN support";
               };
             };
@@ -412,38 +406,35 @@ in
             freeformType = ini.type;
             options = {
               apn = mkOption {
-                type = types.str;
-                default = "internetinternet";
+                type = with types; nullOr str;
+                example = "internet";
                 description = "Set Access Point Name (APN)";
               };
               apn_protocol = mkOption {
-                type = types.str;
-                default = "ipv4";
+                type = with types; nullOr str;
+                example = "ipv4";
                 description = "Set APN protocol (IPv4, IPv6 or IPv4v6.)";
               };
               user = mkOption {
-                type = types.str;
-                default = "srsuser";
+                type = with types; nullOr str;
+                example = "srsuser";
                 description = "Username for CHAP authentication";
               };
               pass = mkOption {
-                type = types.str;
+                type = with types; nullOr str;
                 default = "srspass";
                 description = "Password for CHAP authentication";
               };
               force_imsi_attach = mkOption {
-                type = types.bool;
-                default = false;
+                type = with types; nullOr bool;
                 description = "Whether to always perform an IMSI attach";
               };
               eia = mkOption {
-                type = types.str;
-                default = "1,2,3"; # TODO
+                type = with types; nullOr str; # TODO list
                 description = "List of integrity algorithms included in UE capabilities: Supported: 1 - Snow3G, 2 - AES, 3 - ZUC";
               };
               eea = mkOption {
-                type = types.str;
-                default = "0,1,2,3"; # TODO
+                type = with types; nullOr str; # TODO list
                 description = "List of ciphering algorithms included in UE capabilities: Supported: 0 - NULL, 1 - Snow3G, 2 - AES, 3 - ZUC";
               };
             };
@@ -460,13 +451,11 @@ in
             options = {
               enable = mkEnableOption "slice";
               nssai-sst = mkOption {
-                default = "1";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Specfic Slice Type";
               };
               nssai-sd = mkOption {
-                default = "1";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Slice diffentiator";
               };
             };
@@ -482,18 +471,17 @@ in
             freeformType = ini.type;
             options = {
               netns = mkOption {
-                type = types.str;
-                default = "";
+                type = with types; nullOr str;
                 description = "Network namespace to create TUN device";
               };
               ip_devname = mkOption {
-                type = types.str;
-                default = "tun_srsue";
+                type = with types; nullOr str;
+                example = "tun_srsue";
                 description = "Name of the tun_srsue device";
               };
               ip_netmask = mkOption {
-                type = types.str;
-                default = "255.255.255.0";
+                type = with types; nullOr str;
+                example = "255.255.255.0";
                 description = "Netmask of the tun_srsue device";
               };
             };
