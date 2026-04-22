@@ -179,6 +179,9 @@ in
                       "none"
                     ])
                   );
+                default = [
+                  "none"
+                ];
                 apply = builtins.concatStringsSep ","; # convert list to csv
                 example = [
                   "mac"
@@ -422,7 +425,7 @@ in
               };
               pass = mkOption {
                 type = with types; nullOr str;
-                default = "srspass";
+                example = "srspass";
                 description = "Password for CHAP authentication";
               };
               force_imsi_attach = mkOption {

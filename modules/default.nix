@@ -122,13 +122,13 @@ in
         description = "srsRAN UE";
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
-          ExecPreStart = "ip netns add ue1"; # TODO testing purpose only, out of scope of this module
           ExecStart = "${lib.getExe' cfg.package "srsue"} ${cfg.ue.configFile}";
-          ExecPostStop = "ip netns del ue1"; # TODO testing purpose only, out of scope of this module
           Restart = "on-failure";
 
           # TODO hardening
         };
+        preStart = "${lib.getExe' pkgs.iproute2 "ip"} netns add ue1"; # TODO testing purpose only, out of scope of this module
+        postStop = "${lib.getExe' pkgs.iproute2 "ip"} netns del ue1"; # TODO testing purpose only, out of scope of this module
       };
     };
   };

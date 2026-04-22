@@ -75,7 +75,10 @@ in
             device_name = "zmq";
             device_args = "tx_port=tcp://*:2001,rx_port=tcp://localhost:2000,id=ue,base_srate=23.04e6";
           };
-          gw.netns = "ue1";
+          gw = {
+            netns = "ue1";
+            ip_devname = "tun_srsue";
+          };
           usim = {
             inherit opc k imsi;
             imei = "353490069873319";
@@ -88,7 +91,7 @@ in
   testScript =
     { nodes, ... }:
     let
-      inherit (nodes.machine.services.srsran) epc;
+      inherit (nodes.machine.services.srsran) epc ue;
     in
     /* python */ ''
       machine.wait_for_unit("srsran-epc.service")
@@ -101,13 +104,17 @@ in
 
       machine.wait_for_open_port(2000) # port 2000 is defined in zmq device_args
 
+      machine.wait_until_succeeds("journalctl --boot --unit srsran-enb.service | grep '==== eNodeB started ==='")
+
       machine.wait_for_unit("srsran-ue.service")
 
-      machine.sleep(15)
+      machine.wait_for_open_port(2001) # port 2001 is defined in zmq device_args
 
-      print(machine.succeed("ip a"))
-      machine.succeed("ip netns add ue1")
-      print(machine.succeed("ip -n ue1 a"))
+      machine.wait_until_succeeds("journalctl --boot --unit srsran-ue.service | grep 'Found Cell'")
+      machine.wait_until_succeeds("journalctl --boot --unit srsran-ue.service | grep 'Network attach successful'")
+
+      machine.succeed("ip -n ue1 addr show ${ue.settings.gw.ip_devname}")
+
       print(machine.wait_until_succeeds("ip netns exec ue1 ping -c 1 172.16.0.1"))
     '';
 }
