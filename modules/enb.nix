@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   lib,
   ini,
   ...
@@ -29,70 +28,64 @@ in
             freeformType = ini.type;
             options = {
               enb_id = mkOption {
-                default = "0x19B";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "0x19B";
                 description = "20-bit eNB identifier";
               };
 
               mcc = mkOption {
-                default = "001";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Mobile Country Code";
               };
 
               mnc = mkOption {
-                default = "01";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Mobile Network Code";
               };
 
               mme_addr = mkOption {
-                default = "127.0.1.100";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "127.0.1.100";
                 description = "IP address of MME for S1 connnection";
               };
 
               gtp_bind_addr = mkOption {
-                default = "127.0.1.1";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "127.0.1.1";
                 description = "Local IP address to bind for GTP connection";
               };
 
               gtp_advertise_addr = mkOption {
-                default = "";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "IP address of eNB to advertise for DL GTP-U Traffic";
               };
 
               s1c_bind_addr = mkOption {
-                default = "127.0.1.1";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "127.0.1.1";
                 description = "Local IP address to bind for S1AP connection";
               };
 
               s1c_bind_port = mkOption {
-                default = "0";
-                type = types.str;
-                description = "Source port for S1AP connection (0 means any)";
+                type = with types; nullOr int;
+                description = "Source port for S1AP connection (default 0 means any)";
               };
 
               n_prb = mkOption {
-                default = "50";
-                type = types.str;
-                description = "Number of Physical Resource Blocks (6,15,25,50,75,100)";
+                type = with types; nullOr int;
+                example = 50;
+                description = "Number of Physical Resource Blocks (6,15,25,50,75,100, default is 25)";
               };
 
               tm = mkOption {
-                default = "1";
-                type = types.str;
-                example = "4";
+                type = with types; nullOr int;
+                example = 4;
                 description = "Transmission mode 1-4 (TM1 default)";
               };
 
               nof_ports = mkOption {
-                default = "1";
-                type = types.str;
-                example = "2";
+                type = with types; nullOr int;
+                example = 2;
                 description = "Number of Tx ports (1 port default, set to 2 for TM2/3/4)";
               };
             };
@@ -136,18 +129,17 @@ in
             freeformType = ini.type;
             options = {
               dl_earfcn = mkOption {
-                type = types.str;
-                default = "3350";
+                type = with types; nullOr int;
                 description = "EARFCN code for DL (only valid if a single cell is configured in rr.conf)";
               };
               tx_gain = mkOption {
-                type = types.str;
-                default = "80";
+                type = with types; nullOr int;
+                example = 80;
                 description = "Transmit gain (dB)";
               };
               rx_gain = mkOption {
-                type = types.str;
-                default = "40";
+                type = with types; nullOr int;
+                example = 40;
                 description = "Optional receive gain (dB). If disabled, AGC if enabled";
               };
               dl_freq = mkOption {
@@ -159,19 +151,21 @@ in
                 description = "Override UL frequency corresponding to dl_earfcn (must be set if dl_freq is set)";
               };
               device_name = mkOption {
-                type = types.enum [
-                  "auto" # default, uses first driver found
-                  "UHD"
-                  "bladeRF"
-                  "soapy"
-                  "zmq"
-                ];
-                default = "auto";
+                type =
+                  with types;
+                  nullOr (enum [
+                    "auto" # default, uses first driver found
+                    "UHD"
+                    "bladeRF"
+                    "soapy"
+                    "zmq"
+                  ]);
+                example = "auto";
                 description = "Device driver family";
               };
               device_args = mkOption {
-                type = types.str;
-                default = "auto";
+                type = with types; nullOr str;
+                example = "auto";
                 description = ''
                   Arguments for the device driver.
                   - UHD: "recv_frame_size=9232,send_frame_size=9232"
@@ -179,8 +173,8 @@ in
                 '';
               };
               time_adv_nsamples = mkOption {
-                type = types.str;
-                default = "auto";
+                type = with types; nullOr str;
+                example = "auto";
                 description = ''
                   Transmission time advance (in number of samples) to compensate for RF delay from antenna to timestamp insertion.
                   - B210 USRP: 100 samples
@@ -200,29 +194,30 @@ in
             options = {
               # TODO generate other options: rf, phy, phy_lib, mac, rlc, pdcp, rrc, gtpu, s1ap, stack, all
               all_level = mkOption {
-                default = "warning";
-                type = types.enum [
-                  "debug"
-                  "info"
-                  "warning" # default
-                  "error"
-                  "none"
-                ];
+                type =
+                  with types;
+                  nullOr (enum [
+                    "debug"
+                    "info"
+                    "warning"
+                    "error"
+                    "none"
+                  ]);
                 description = "Log levels for all layers";
               };
               all_hex_limit = mkOption {
-                default = "32";
-                type = types.str;
+                type = with types; nullOr int;
+                example = 32;
                 description = "Limit for packet hex dumps for all layers";
               };
               filename = mkOption {
-                default = "/tmp/enb.log";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "/tmp/enb.log";
                 description = "File path to use for log output. Can be set to stdout to print logs to standard output.";
               };
               file_max_size = mkOption {
-                default = "-1";
-                type = types.str;
+                type = with types; nullOr int;
+                example = -1;
                 description = "Maximum file size (in kilobytes). When passed, multiple files are created. If set to negative, a single log file will be created.";
               };
             };

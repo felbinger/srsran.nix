@@ -28,90 +28,86 @@ in
             freeformType = ini.type;
             options = {
               mme_code = mkOption {
-                default = "0x1a";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "8-bit MME code identifies the MME within a group";
               };
 
               mme_group = mkOption {
-                default = "0x0001";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "16-bit MME group identifier";
               };
 
               tac = mkOption {
-                default = "0x0001";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "0x0001";
                 description = "16-bit Tracking Area Code";
               };
 
               mcc = mkOption {
-                default = "001";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Mobile Country Code";
               };
 
               mnc = mkOption {
-                default = "01";
-                type = types.str;
+                type = with types; nullOr str;
                 description = "Mobile Network Code";
               };
 
               mme_bind_addr = mkOption {
-                default = "127.0.1.100";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "127.0.1.100";
                 description = "IP bind addr to listen for eNB S1-MME connnections.";
               };
 
               apn = mkOption {
-                default = "srsapn";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "srsapn";
                 description = "Access Point Name";
               };
 
               dns_addr = mkOption {
-                default = "8.8.8.8";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "8.8.8.8";
                 description = "DNS server address for the UEs.";
               };
 
               encryption_algo = mkOption {
-                default = "EEA0";
-                type = types.enum [
-                  "EEA0" # default
-                  "EEA1"
-                  "EEA2"
-                  "EEA3"
-                ];
+                type =
+                  with types;
+                  nullOr (enum [
+                    "EEA0"
+                    "EEA1"
+                    "EEA2"
+                    "EEA3"
+                  ]);
                 description = "Preferred encryption algorithm for NAS layer";
               };
 
               integrity_algo = mkOption {
-                default = "EIA1";
-                type = types.enum [
-                  "EIA0" # rejected by most UEs
-                  "EIA1" # default
-                  "EIA2"
-                  "EIA3"
-                ];
+                type =
+                  with types;
+                  nullOr (enum [
+                    "EIA0" # rejected by most UEs
+                    "EIA1"
+                    "EIA2"
+                    "EIA3"
+                  ]);
                 description = "Preferred integrity protection algorithm for NAS";
               };
 
               paging_timer = mkOption {
-                default = "2";
-                type = types.str;
+                type = with types; nullOr int;
                 description = "Value of paging timer in seconds (T3413)";
               };
 
               request_imeisv = mkOption {
-                default = false;
-                type = types.bool;
+                type = with types; nullOr bool;
                 description = "Request UE's IMEI-SV in security mode command";
               };
 
               lac = mkOption {
-                default = "0x0006";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "0x0006";
                 description = "16-bit Location Area Code";
               };
             };
@@ -145,26 +141,25 @@ in
             freeformType = ini.type;
             options = {
               gtpu_bind_addr = mkOption {
-                default = "127.0.1.100";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "127.0.1.100";
                 description = "GTP-U bind address";
               };
 
               sgi_if_addr = mkOption {
-                default = "172.16.0.1";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "172.16.0.1";
                 description = "SGi TUN interface IP address";
               };
 
               sgi_if_name = mkOption {
-                default = "srs_spgw_sgi";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "srs_spgw_sgi";
                 description = "SGi TUN interface name";
               };
 
               max_paging_queue = mkOption {
-                default = "100";
-                type = types.str;
+                type = with types; nullOr int;
                 description = "Maximum packets in paging queue (per UE)";
               };
             };
@@ -182,8 +177,8 @@ in
             options = {
               enable = mkEnableOption "PCAP";
               filename = mkOption {
-                default = "/tmp/epc.pcap";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "/tmp/epc.pcap";
                 description = "File name where to save the PCAP";
               };
             };
@@ -207,24 +202,25 @@ in
             options = {
               # TODO generate other options: nas, s1ap, mme_gtpc, spgw_gtpc, gtpu, spgw, hss, all
               all_level = mkOption {
-                default = "info";
-                type = types.enum [
-                  "debug"
-                  "info" # default
-                  "warning"
-                  "error"
-                  "none"
-                ];
+                type =
+                  with types;
+                  nullOr (enum [
+                    "debug"
+                    "info" # default
+                    "warning"
+                    "error"
+                    "none"
+                  ]);
                 description = "Log levels for all layers";
               };
               all_hex_limit = mkOption {
-                default = "32";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "32";
                 description = "Limit for packet hex dumps for all layers";
               };
               filename = mkOption {
-                default = "/tmp/epc.log";
-                type = types.str;
+                type = with types; nullOr str;
+                example = "/tmp/epc.log";
                 description = "File path to use for log output. Can be set to stdout to print logs to standard output.";
               };
             };
