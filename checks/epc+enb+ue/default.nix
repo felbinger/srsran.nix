@@ -86,6 +86,8 @@ in
 
       machine.wait_for_unit("srsran-enb.service")
 
+      machine.wait_for_open_port(2000) # port 2000 is defined in zmq device_args
+
       machine.wait_for_unit("srsran-ue.service")
 
       machine.sleep(15)

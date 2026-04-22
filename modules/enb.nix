@@ -107,7 +107,7 @@ in
             freeformType = ini.type;
             options = {
               sib_config = mkOption {
-                default = pkgs.writeText "sib.conf" (builtins.readFile ./sib.conf);
+                default = "${./sib.conf}";
                 type = types.path;
                 description = ''
                   SIB1, SIB2 and SIB3 configuration file
@@ -115,12 +115,12 @@ in
                 '';
               };
               rr_config = mkOption {
-                default = pkgs.writeText "rr.conf" (builtins.readFile ./rr.conf);
+                default = "${./rr.conf}";
                 type = types.path;
                 description = "Radio Resources configuration file";
               };
               rb_config = mkOption {
-                default = pkgs.writeText "rb.conf" (builtins.readFile ./rb.conf);
+                default = "${./rb.conf}";
                 type = types.path;
                 description = "SRB/DRB configuration file";
               };
