@@ -51,6 +51,7 @@ builtins.listToAttrs (
                 zeromq
 
                 tcpdump
+                pwru
               ];
             };
             interactive = {
