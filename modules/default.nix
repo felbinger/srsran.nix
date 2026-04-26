@@ -127,8 +127,6 @@ in
 
           # TODO hardening
         };
-        preStart = "${lib.getExe' pkgs.iproute2 "ip"} netns add ue1"; # TODO testing purpose only, out of scope of this module
-        postStop = "${lib.getExe' pkgs.iproute2 "ip"} netns del ue1"; # TODO testing purpose only, out of scope of this module
       };
     };
   };

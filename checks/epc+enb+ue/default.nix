@@ -1,5 +1,6 @@
 {
   self,
+  lib,
   pkgs,
   ...
 }:
@@ -85,6 +86,10 @@ in
           };
         };
       };
+    };
+    systemd.services.srsran-ue = {
+      preStart = "${lib.getExe' pkgs.iproute2 "ip"} netns add ue1";
+      postStop = "${lib.getExe' pkgs.iproute2 "ip"} netns del ue1";
     };
   };
 
