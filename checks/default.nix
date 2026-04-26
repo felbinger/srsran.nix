@@ -32,7 +32,7 @@ builtins.listToAttrs (
         driver = pkgs.testers.runNixOSTest (
           lib.recursiveUpdate {
             defaults = {
-              virtualisation.memorySize = 2048;
+              virtualisation.memorySize = 2048; # TODO check if still needed in interactive test with splitted setup
 
               imports = [
                 (nixpkgs + "/nixos/modules/profiles/minimal.nix")
@@ -58,8 +58,7 @@ builtins.listToAttrs (
               nodes = lib.listToAttrs (
                 map (name: {
                   inherit name;
-                  value.virtualisation.graphics = # false;
-                    true;
+                  value.virtualisation.graphics = true; # TODO set to false after vsock-mux work as before with vsock/3
                 }) (builtins.attrNames test.nodes)
               );
             };
@@ -69,7 +68,7 @@ builtins.listToAttrs (
       if interactive then
         {
           type = "app";
-          program = "${driver.driverInteractive}/bin/nixos-test-driver";
+          program = lib.getExe' driver.driverInteractive "nixos-test-driver";
           meta.description = test.name;
         }
       else
