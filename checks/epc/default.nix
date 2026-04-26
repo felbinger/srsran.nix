@@ -6,8 +6,6 @@
 {
   name = "epc";
 
-  node.pkgsReadOnly = false;
-
   nodes.machine = {
     imports = [
       self.nixosModules.default
@@ -17,31 +15,10 @@
       epc = {
         enable = true;
         settings = {
-          hss.db_file = pkgs.writeText "user_db.csv" ''
-            #
-            # .csv to store UE's information in HSS
-            # Kept in the following format: "Name,Auth,IMSI,Key,OP_Type,OP/OPc,AMF,SQN,QCI,IP_alloc"
-            #
-            # Name:     Human readable name to help distinguish UE's. Ignored by the HSS
-            # Auth:     Authentication algorithm used by the UE. Valid algorithms are XOR
-            #           (xor) and MILENAGE (mil)
-            # IMSI:     UE's IMSI value
-            # Key:      UE's key, where other keys are derived from. Stored in hexadecimal
-            # OP_Type:  Operator's code type, either OP or OPc
-            # OP/OPc:   Operator Code/Cyphered Operator Code, stored in hexadecimal
-            # AMF:      Authentication management field, stored in hexadecimal
-            # SQN:      UE's Sequence number for freshness of the authentication
-            # QCI:      QoS Class Identifier for the UE's default bearer.
-            # IP_alloc: IP allocation stratagy for the SPGW.
-            #           With 'dynamic' the SPGW will automatically allocate IPs
-            #           With a valid IPv4 (e.g. '172.16.0.2') the UE will have a statically assigned IP.
-            #
-            # Note: Lines starting by '#' are ignored and will be overwritten
-            ue1,xor,001010123456789,00112233445566778899aabbccddeeff,opc,63bfa50ee6523365ff14c1f45f88737d,9001,000000001234,7,dynamic
-            ue2,mil,001010123456780,00112233445566778899aabbccddeeff,opc,63bfa50ee6523365ff14c1f45f88737d,8000,000000001234,7,dynamic
-          '';
+          hss.db_file = pkgs.writeText "user_db.csv" "";
           spgw = {
             # tun interface for the SGi connection
+            # these are the default values of srsran, they had to be specified to use the nix options values within the testScript
             sgi_if_addr = "172.16.0.1";
             sgi_if_name = "srs_spgw_sgi";
           };
