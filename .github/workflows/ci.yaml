@@ -1,102 +1,102 @@
-#name: CI
-#
-#on:
-#  pull_request:
-#  push:
-#    branches:
-#      - main
-#
-#permissions:
-#  contents: read
-#  id-token: write
-#
-#jobs:
-#  nixfmt:
-#    name: nixfmt
-#    runs-on: ubuntu-24.04
-#    steps:
-#      - uses: cachix/install-nix-action@v31
-#      - uses: DeterminateSystems/magic-nix-cache-action@v13
-#        with:
-#          use-flakehub: false
-#
-#      - uses: actions/checkout@v6
-#
-#      - name: nixfmt
-#        run: nix run nixpkgs#nixfmt-rfc-style -- --check .
-#
-#  deadnix:
-#    name: deadnix
-#    runs-on: ubuntu-24.04
-#    steps:
-#      - uses: cachix/install-nix-action@v31 # v21
-#      - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
-#        with:
-#          use-flakehub: false
-#
-#      - uses: actions/checkout@v6
-#
-#      - name: deadnix
-#        run: nix run nixpkgs#deadnix -- --fail .
-#
-#  show:
-#    name: nix flake show
-#    runs-on: ubuntu-24.04
-#    outputs:
-#      matrix: ${{ steps.generate-matrix.outputs.matrix }}
-#    steps:
-#      - uses: cachix/install-nix-action@v31 # v21
-#      - uses: DeterminateSystems/magic-nix-cache-action@v13
-#        with:
-#          use-flakehub: false
-#
-#      - uses: actions/checkout@v6
-#
-#      - name: Show flake structure
-#        run: nix flake show 2> /dev/null
-#
-#      - name: Generate test matrix
-#        id: generate-matrix
-#        run: |
-#          matrix=$(nix flake show --json | jq -r '.checks["x86_64-linux"] | keys | tojson')
-#          echo "matrix=${matrix}" >> $GITHUB_OUTPUT
-#
-#  check:
-#    name: nix flake check
-#    runs-on: ubuntu-24.04
-#    steps:
-#      - uses: cachix/install-nix-action@v31 # v21
-#      - uses: DeterminateSystems/magic-nix-cache-action@v13
-#        with:
-#          use-flakehub: false
-#
-#      - uses: actions/checkout@v6
-#
-#      - name: Check flake
-#        run: nix -L flake check --no-build
-#
-#  test:
-#    name: "nix build .#${{ matrix.name }}"
-#    needs: [ show, check ]
-#    runs-on: ubuntu-24.04
-#    strategy:
-#      matrix:
-#        name: ${{ fromJson(needs.show.outputs.matrix) }}
-#    steps:
-#      - name: Maximize build space
-#        run: |
-#          sudo rm -rf /usr/share/dotnet
-#          sudo rm -rf /usr/local/lib/android
-#          sudo rm -rf /opt/ghc
-#          sudo rm -rf /opt/hostedtoolcache/CodeQL
-#          sudo docker image prune --all --force
-#
-#      - uses: cachix/install-nix-action@v31 # v21
-#      - uses: DeterminateSystems/magic-nix-cache-action@v13
-#        with:
-#          use-flakehub: false
-#
-#      - uses: actions/checkout@v6
-#
-#      - name: Run integration test
-#        run: nix -L build .#checks.x86_64-linux.${{ matrix.name }}
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  nixfmt:
+    name: nixfmt
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: cachix/install-nix-action@v31
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+        with:
+          use-flakehub: false
+
+      - uses: actions/checkout@v6
+
+      - name: nixfmt
+        run: nix run nixpkgs#nixfmt-rfc-style -- --check .
+
+  deadnix:
+    name: deadnix
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: cachix/install-nix-action@v31 # v21
+      - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
+        with:
+          use-flakehub: false
+
+      - uses: actions/checkout@v6
+
+      - name: deadnix
+        run: nix run nixpkgs#deadnix -- --fail .
+
+  show:
+    name: nix flake show
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+    steps:
+      - uses: cachix/install-nix-action@v31 # v21
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+        with:
+          use-flakehub: false
+
+      - uses: actions/checkout@v6
+
+      - name: Show flake structure
+        run: nix flake show 2> /dev/null
+
+      - name: Generate test matrix
+        id: generate-matrix
+        run: |
+          matrix=$(nix flake show --json | jq -r '.checks["x86_64-linux"] | keys | tojson')
+          echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+
+  check:
+    name: nix flake check
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: cachix/install-nix-action@v31 # v21
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+        with:
+          use-flakehub: false
+
+      - uses: actions/checkout@v6
+
+      - name: Check flake
+        run: nix -L flake check --no-build
+
+  test:
+    name: "nix build .#${{ matrix.name }}"
+    needs: [ show, check ]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        name: ${{ fromJson(needs.show.outputs.matrix) }}
+    steps:
+      - name: Maximize build space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+
+      - uses: cachix/install-nix-action@v31 # v21
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+        with:
+          use-flakehub: false
+
+      - uses: actions/checkout@v6
+
+      - name: Run integration test
+        run: nix -L build .#checks.x86_64-linux.${{ matrix.name }}
