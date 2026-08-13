@@ -47,9 +47,9 @@
                 };
               }
             ];
-            title = "Module Search of felbinger/srsRAN.nix";
+            title = "Module Search of rat.nix/srsRAN.nix";
             baseHref = "/srsran.nix/";
-            urlPrefix = "https://github.com/felbinger/srsran.nix/blob/main/";
+            urlPrefix = "https://github.com/rat-nix/srsran.nix/blob/main/";
           };
         }
       );

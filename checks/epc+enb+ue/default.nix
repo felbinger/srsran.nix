@@ -159,6 +159,17 @@ in
         check_log("ue", "Network attach successful")
         ue.succeed("ip addr show ${ue.settings.gw.ip_devname}")
 
+        print(epc.succeed("journalctl -u srsran-epc -n 20"))
+        print(enb.succeed("journalctl -u srsran-enb -n 20"))
+        print(ue.succeed("journalctl -u srsran-ue -n 20"))
+
+        print(epc.succeed("ip -br a"))
+        print(enb.succeed("ip -br a"))
+        print(ue.succeed("ip -br a"))
+        print(epc.succeed("ip r"))
+        print(enb.succeed("ip r"))
+        print(ue.succeed("ip r"))
+
         print(ue.wait_until_succeeds("ping -c 1 172.16.0.1")) # TODO doesn't work
 
       print(epc.succeed("journalctl -u srsran-epc -n 20"))
